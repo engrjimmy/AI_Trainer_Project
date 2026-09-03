@@ -114,140 +114,216 @@ AI_Trainer_Project/
 
 ---
 
-## Training
+## 1. Training Setup
 
-### Hardware Detection
+### 1.1 GPU environment
 
-Check GPU availability:
+Use this first to confirm the GPU is active:
 ```bash
+cd AI_Trainer_Project/object_detection_trainer
 nvidia-smi
+python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 ```
 
-If the command returns GPU information, GPU training is available.  
-If the command fails, use CPU training mode.
-
-### Basic Training Commands
-
-**Quick Test (2 epochs, 5 minutes):**
-```bash
-cd AI_Trainer_Project
-./train.sh --epochs 2 --batch 2 --name quick_test
+Expected output:
+```text
+PyTorch: 2.4.0+cu121
+CUDA available: True
 ```
 
-**Development Training (10 epochs, 20 minutes):**
+If the result shows `CUDA available: True`, use the GPU commands below.
+
+### 1.2 CPU environment
+
+If no GPU is available, run the CPU version with `--device cpu`:
 ```bash
-./train.sh --epochs 10 --batch 2 --name dev_training
+cd AI_Trainer_Project/object_detection_trainer
+python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 ```
 
-**Production Training (50 epochs, 2 hours):**
-```bash
-./train.sh --epochs 50 --batch 2 --name production
+Expected output:
+```text
+PyTorch: 2.4.0+cpu
+CUDA available: False
 ```
 
-### Direct Python Training
+This confirms the project is running on CPU mode and should use the CPU training command below.
 
-**CPU Training:**
+---
+
+## 2. Training Commands
+
+### Quick test (2 epochs, ~5-10 min)
 ```bash
-cd object_detection_trainer
+cd AI_Trainer_Project/object_detection_trainer
+
 python3 train.py \
   --data data_configs/box.yaml \
-  --epochs 50 \
+  --epochs 2 \
+  --model fasterrcnn_resnet50_fpn \
+  --name box_test_quick \
+  --batch 8
+
+# When asked "wandb: Enter your choice:" - Type: 3 (Don't visualize)
+```
+
+### Full training (20 epochs, ~1-2 hours)
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+
+python3 train.py \
+  --data data_configs/box.yaml \
+  --epochs 20 \
+  --model fasterrcnn_resnet50_fpn \
+  --name box_training \
+  --batch 16
+```
+
+### CPU training (original PC test flow)
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+
+python3 train.py \
+  --data data_configs/box.yaml \
+  --epochs 2 \
+  --model fasterrcnn_resnet50_fpn \
+  --name box_test_quick \
   --batch 2 \
   --device cpu \
   --workers 0 \
-  --disable-wandb \
-  --name production_cpu
+  --disable-wandb
 ```
 
-**GPU Training:**
+This is the original CPU-style test path used in the project when no NVIDIA CUDA driver is available or when running on a standard PC.
+
+For a wrapper-based CPU run, the project also supports:
 ```bash
-cd object_detection_trainer
-python3 train.py \
-  --data data_configs/box.yaml \
-  --epochs 100 \
-  --batch 16 \
-  --disable-wandb \
-  --name production_gpu
+cd AI_Trainer_Project
+./train.sh --cpu --epochs 2 --batch 2 --name box_cpu_test
 ```
 
-### Training Parameters
+This wrapper uses `nice -n 19` and sets low-priority CPU execution automatically.
 
-| Parameter | Description | Default | CPU Recommendation | GPU Recommendation |
-|-----------|-------------|---------|--------------------|--------------------|
-| --data | Dataset configuration file | Required | data_configs/box.yaml | data_configs/box.yaml |
-| --epochs | Number of training epochs | Required | 20-50 | 50-100 |
-| --batch | Batch size | 4 | 2-4 | 8-32 |
-| --device | Compute device | cuda | cpu | cuda (auto) |
-| --workers | Data loader workers | 4 | 0 | 4-8 |
-| --name | Experiment name | training | custom | custom |
-| --disable-wandb | Disable W&B logging | False | Recommended | Optional |
-| --model | Model architecture | fasterrcnn_resnet50_fpn | Default | Default |
-
-### Training Duration Estimates
-
-Dataset: 70 train + 8 validation images
-
-| Configuration | CPU Duration | GPU Duration | Expected mAP |
-|---------------|--------------|--------------|--------------|
-| 2 epochs | ~5 minutes | ~1 minute | 0.50-0.70 |
-| 10 epochs | ~25 minutes | ~5 minutes | 0.75-0.85 |
-| 50 epochs | ~2 hours | ~20 minutes | 0.85-0.95 |
-| 100 epochs | ~4 hours | ~40 minutes | 0.90-0.98 |
-
----
-
-## Model Evaluation
-
-### Evaluate Trained Model
-
-```bash
-cd object_detection_trainer
-python3 eval.py \
-  --model outputs/training/production/best_model.pth \
-  --data data_configs/box.yaml \
-  --device cpu
+**Training output location:**
+```text
+outputs/training/box_training/
+# or outputs/training/box_test_quick/
+# or outputs/training/box_cpu_test/
 ```
 
 ---
 
-## Inference
+## 3. Find Models
 
-### Run Inference on Images
-
+**Best model (use this):**
 ```bash
-cd object_detection_trainer
-python3 inference.py \
+outputs/training/box_training/best_model.pth
+```
+
+**ONNX model (for deployment):**
+```bash
+outputs/training/box_training/model.onnx
+```
+
+**Other models:**
+- `final_model.pth` - Last epoch
+- `last_model.pth` - Latest checkpoint
+
+---
+
+## 4. Run Detection (ONNX)
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+
+python3 object_detection_onnx_inference.py \
   --input /path/to/test/images \
-  --model outputs/training/production/best_model.pth \
+  --weights outputs/training/box_training/model.onnx \
   --data data_configs/box.yaml \
-  --device cpu
+  --imgsz 640
 ```
 
-### Run Inference on Video
-
-```bash
-python3 inference_video.py \
-  --input /path/to/video.mp4 \
-  --model outputs/training/production/best_model.pth \
-  --data data_configs/box.yaml \
-  --device cpu
+**Detection results saved in:**
+```text
+outputs/inference/res_X/
+# where X is auto-incremented: res_1, res_2, res_3, etc.
 ```
 
 ---
 
-## Output Files
+## 5. Check Detection Images
+```bash
+cd AI_Trainer_Project/object_detection_trainer
 
-Training outputs are saved to `outputs/training/<experiment_name>/`:
+find outputs/inference -name "*.jpg" | head -10
+ls -lh outputs/inference/res_1/*.jpg
+ls -lh outputs/inference/res_2/*.jpg
+find outputs/inference -name "*.jpg" | wc -l
+```
 
+---
+
+## 6. Run Evaluation
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+
+python3 eval.py \
+  --data data_configs/box.yaml \
+  --weights outputs/training/box_training/best_model.pth \
+  --model fasterrcnn_resnet50_fpn
 ```
-outputs/training/production/
-├── best_model.pth              # Best model weights (highest mAP)
-├── last_model.pth              # Last epoch model weights
-├── results.csv                 # Training metrics (loss, mAP)
-├── map.png                     # mAP plot
-├── train_loss_epoch.png        # Training loss plot
-└── train.log                   # Training log file
+
+**Evaluation results:**
+```text
+outputs/training/box_training/evaluation/
 ```
+
+---
+
+## 7. Check Training Results
+```bash
+cd AI_Trainer_Project/object_detection_trainer/outputs/training/box_training
+
+cat results.csv
+cat train.log
+ls *.png
+```
+
+---
+
+## 8. Quick Verify Everything Works
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+
+ls -lh outputs/training/box_training/*.pth
+ls -lh outputs/training/box_training/*.onnx
+
+tail outputs/training/box_training/results.csv
+ls outputs/training/box_training/image_*.jpg
+```
+
+---
+
+## 9. Key Files Summary
+
+| File | Location | Purpose |
+|------|----------|---------|
+| **Training script** | `train.py` | Train model |
+| **Best model** | `outputs/training/box_training/best_model.pth` | **Use this** |
+| **ONNX model** | `outputs/training/box_training/model.onnx` | **Deployment** |
+| **Training results** | `outputs/training/box_training/results.csv` | mAP, loss |
+| **Detection script** | `object_detection_onnx_inference.py` | Run inference |
+| **Eval script** | `eval.py` | Get accuracy |
+| **Config** | `data_configs/box.yaml` | Dataset config |
+
+---
+
+## 10. Quick Test Example Results (2 epochs)
+- **mAP@0.5:** 74.6%
+- **mAP@0.5-0.95:** 41.9%
+- **Training time:** ~5-10 minutes
+- **Location:** `outputs/training/box_test_quick/best_model.pth`
+- **ONNX:** `outputs/training/box_test_quick/model.onnx`
+- **Detection results:** `outputs/inference/res_X/*.jpg`
 
 ---
 
