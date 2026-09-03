@@ -29,6 +29,17 @@ TERMS AND CONDITIONS
    c) Redistribution of the Software or any derivative works is prohibited
       without explicit authorization from QibiTech Inc.
 
+   d) DATASET RESTRICTION: Any data, images, annotations, labels, metadata,
+      model outputs, or derived products included in or associated with this
+      repository are NOT open public data and shall not be used, copied,
+      redistributed, published, trained on, or derived from without prior
+      written permission from QibiTech Inc. and the authorized project lead.
+
+   e) No party may share, upload, publish, or distribute any dataset subset,
+      annotation file, generated output, or model trained on the restricted data
+      in public repositories, third-party systems, or external platforms without
+      explicit written authorization.
+
 3. PERMITTED USE
    - Research and academic purposes
    - Testing and evaluation
