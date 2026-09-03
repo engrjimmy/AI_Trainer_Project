@@ -1,6 +1,8 @@
-# AI Trainer
+# AI Trainer Project
 
 Object Detection Model Training Framework using PyTorch Faster R-CNN
+
+Repository: AI_Trainer_Project
 
 ---
 
