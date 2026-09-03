@@ -1,0 +1,99 @@
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.dump
+database/
+db/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# PyTorch / Model files
+*.pth
+*.pt
+*.onnx
+*.pb
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Training outputs
+outputs/
+runs/
+results/
+checkpoints/
+logs/
+wandb/
+*.log
+
+# Dataset (optional - uncomment if you want to exclude datasets)
+# data/
+# dataset/
+# training_data/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Compressed files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Video/Image temporary files
+*.mp4.tmp
+*.avi.tmp
+*.mov.tmp

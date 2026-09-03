@@ -1,0 +1,42 @@
+# ================================================================================
+# AI Trainer - Box Detection Dataset Configuration
+# ================================================================================
+#
+# Author:        Jimmy Majumder
+# Position:      Sr. Robotics Engineer
+# Organization:  QibiTech Inc.
+# Email:         j.majumder@qibitech.com
+# Date:          2024_Jun
+#
+# Copyright (c) 2024 QibiTech Inc.
+# All rights reserved.
+#
+# NOTICE:
+# This code and data is for research and testing purposes only.
+# DO NOT use for product development or production phase.
+# For inquiries, contact: j.majumder@qibitech.com
+# ================================================================================
+
+# Images and labels direcotry should be relative to train.py
+TRAIN_DIR_IMAGES: ./data/images/train
+TRAIN_DIR_LABELS: ./data/annotations/train
+VALID_DIR_IMAGES: ./data/images/val
+VALID_DIR_LABELS: ./data/annotations/val
+# Optional test data path. If given, test paths (data) will be used in
+# `eval.py`.
+TEST_DIR_IMAGES: ./data/images/test
+TEST_DIR_LABELS: ./data/annotations/test
+
+# Class names.
+CLASSES: [
+    '__background__',
+    'box'
+]
+
+# Number of classes (object classes + 1 for background class in Faster RCNN).
+NC: 2
+
+# Whether to save the predictions of the validation set while training.
+# Set to True to save validation prediction images (recommended for GPU training).
+# Set to False if encountering OpenCV errors or to save disk space.
+SAVE_VALID_PREDICTION_IMAGES: True # False for CPU training or if encountering OpenCV errors.
