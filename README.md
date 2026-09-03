@@ -362,6 +362,25 @@ Evaluation uses COCO metrics standard.
 
 ---
 
+## Dataset and Usage Restrictions
+
+This project includes a shared dataset and associated annotations that are proprietary to QibiTech Inc. and must be used only under explicit permission.
+
+### Important policy
+- The dataset files in this repository are not open-public data.
+- All dataset contents remain the copyright property of QibiTech Inc.
+- Use of the dataset for research, training, evaluation, or redistribution requires prior written permission.
+- Reuse, sharing, or publication of any dataset subset or derived data must be approved before distribution.
+- Any external use, collaboration, or transfer must be coordinated with Jimmy Majumder and QibiTech Inc. stakeholders.
+- For research purposes, dataset use is permitted only after approval and only when collaboration with Jimmy is in place.
+- If you do not have permission, do not use the dataset or any files from the shared dataset folder.
+- Do not upload, copy, or redistribute the dataset to other repositories, systems, or public locations without approval.
+
+### Research collaboration requirement
+For any research-related use of the dataset, the project must involve or be approved by Jimmy Majumder. External or independent use without such collaboration is not permitted.
+
+---
+
 ## License
 
 Proprietary software owned by QibiTech Inc.
