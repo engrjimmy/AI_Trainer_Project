@@ -379,6 +379,9 @@ This project includes a shared dataset and associated annotations that are propr
 ### Research collaboration requirement
 For any research-related use of the dataset, the project must involve or be approved by Jimmy Majumder. External or independent use without such collaboration is not permitted.
 
+### Public repository note
+This repository is shared for project visibility and documentation only. The dataset and any derived materials remain restricted until explicit permission is granted by the copyright owner and project lead.
+
 ---
 
 ## License
