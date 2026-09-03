@@ -44,7 +44,7 @@ Repository: AI_Trainer_Project
 Navigate to the project directory and install required Python packages:
 
 ```bash
-cd /home/engrjimmy/ros2_ws/src/AI_Trainer/object_detection_trainer
+cd /home/engrjimmy/ros2_ws/src/AI_Trainer_Project/object_detection_trainer
 pip3 install --user -r requirements.txt
 ```
 
@@ -73,7 +73,7 @@ pip3 install --user albumentations==1.3.1 --force-reinstall
 For isolated environment management:
 
 ```bash
-cd /home/engrjimmy/ros2_ws/src/AI_Trainer/object_detection_trainer
+cd /home/engrjimmy/ros2_ws/src/AI_Trainer_Project/object_detection_trainer
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 ## Project Structure
 
 ```
-AI_Trainer/
+AI_Trainer_Project/
 ├── object_detection_trainer/     # Core training framework
 │   ├── train.py                  # Main training script
 │   ├── eval.py                   # Model evaluation
@@ -129,7 +129,7 @@ If the command fails, use CPU training mode.
 
 **Quick Test (2 epochs, 5 minutes):**
 ```bash
-cd /home/engrjimmy/ros2_ws/src/AI_Trainer
+cd /home/engrjimmy/ros2_ws/src/AI_Trainer_Project
 ./train.sh --epochs 2 --batch 2 --name quick_test
 ```
 
