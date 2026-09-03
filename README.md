@@ -362,29 +362,6 @@ Evaluation uses COCO metrics standard.
 
 ---
 
-## Branch Workflow
-
-This repository follows a simple public-friendly Git flow:
-
-- `main` is the stable branch for releases and verified work.
-- `development` is used for ongoing work and feature updates.
-- Changes should be made on `development` and submitted with a pull request before merging to `main`.
-
-Typical workflow:
-
-```bash
-git checkout development
-git pull origin development
-git add .
-git commit -m "Describe your update"
-git push origin development
-gh pr create --base main --head development --title "Feature update" --body "Describe the change"
-```
-
-After review, merge the pull request into `main`.
-
----
-
 ## License
 
 Proprietary software owned by QibiTech Inc.
