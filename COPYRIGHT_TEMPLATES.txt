@@ -1,0 +1,115 @@
+================================================================================
+COPYRIGHT HEADER TEMPLATES
+================================================================================
+
+Use these templates when creating new files in the AI_Trainer project.
+
+--------------------------------------------------------------------------------
+PYTHON FILES (.py)
+--------------------------------------------------------------------------------
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+================================================================================
+ AI Trainer - [Description of this file]
+================================================================================
+
+ Author:        Jimmy Majumder
+ Position:      Sr. Robotics Engineer
+ Organization:  QibiTech Inc.
+ Email:         j.majumder@qibitech.com
+ Date:          2024_Jun
+
+ Copyright (c) 2024 QibiTech Inc.
+ All rights reserved.
+
+ NOTICE:
+ This code and data is for research and testing purposes only.
+ DO NOT use for product development or production phase.
+ For commercial use or inquiries, contact: j.majumder@qibitech.com
+
+================================================================================
+"""
+
+# Your code here...
+
+
+--------------------------------------------------------------------------------
+SHELL SCRIPTS (.sh)
+--------------------------------------------------------------------------------
+
+#!/bin/bash
+################################################################################
+# AI Trainer - [Description of this script]
+################################################################################
+#
+# Author:        Jimmy Majumder
+# Position:      Sr. Robotics Engineer
+# Organization:  QibiTech Inc.
+# Email:         j.majumder@qibitech.com
+# Date:          2024_Jun
+#
+# Copyright (c) 2024 QibiTech Inc.
+# All rights reserved.
+#
+# NOTICE:
+# This code and data is for research and testing purposes only.
+# DO NOT use for product development or production phase.
+# For commercial use or inquiries, contact: j.majumder@qibitech.com
+#
+################################################################################
+
+# Your code here...
+
+
+--------------------------------------------------------------------------------
+YAML/CONFIG FILES (.yaml, .yml)
+--------------------------------------------------------------------------------
+
+# ================================================================================
+# AI Trainer - [Description of this config]
+# ================================================================================
+#
+# Author:        Jimmy Majumder
+# Position:      Sr. Robotics Engineer
+# Organization:  QibiTech Inc.
+# Email:         j.majumder@qibitech.com
+# Date:          2024_Jun
+#
+# Copyright (c) 2024 QibiTech Inc.
+# All rights reserved.
+#
+# NOTICE:
+# This code and data is for research and testing purposes only.
+# DO NOT use for product development or production phase.
+# For inquiries, contact: j.majumder@qibitech.com
+# ================================================================================
+
+# Your configuration here...
+
+
+--------------------------------------------------------------------------------
+MARKDOWN FILES (.md)
+--------------------------------------------------------------------------------
+
+# [Title]
+
+---
+
+**Author:** Jimmy Majumder  
+**Position:** Sr. Robotics Engineer  
+**Organization:** QibiTech Inc.  
+**Email:** j.majumder@qibitech.com  
+**Date:** 2024_Jun  
+
+**Copyright © 2024 QibiTech Inc. All rights reserved.**
+
+> **NOTICE:** This code and data is for research and testing purposes only.  
+> DO NOT use for product development or production phase.  
+> For commercial use or inquiries, please contact: j.majumder@qibitech.com
+
+---
+
+Your content here...
+

@@ -1,0 +1,11 @@
+CLASSES:
+- __background__
+- box
+NC: 2
+SAVE_VALID_PREDICTION_IMAGES: true
+TEST_DIR_IMAGES: ./training_data/images/test
+TEST_DIR_LABELS: ./training_data/annotations/test
+TRAIN_DIR_IMAGES: ./training_data/images/train
+TRAIN_DIR_LABELS: ./training_data/annotations/train
+VALID_DIR_IMAGES: ./training_data/images/val
+VALID_DIR_LABELS: ./training_data/annotations/val
