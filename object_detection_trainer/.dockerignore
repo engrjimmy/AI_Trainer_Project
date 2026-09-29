@@ -1,0 +1,13 @@
+outputs/
+wandb/
+data/
+weights/
+docs/
+notebook_examples/
+readme_images/
+__pycache__/
+*.pyc
+*.log
+*.pth
+*.onnx
+.ipynb_checkpoints/
