@@ -141,12 +141,54 @@ Reference (5 epochs, test set, threshold 0.5): P 0.88 / R 0.98 / F1 0.93, mAP@0.
 ```bash
 python3 export.py --weights outputs/training/box_training/best_model.pth --data data_configs/box.yaml --out model.onnx
 python3 split_data.py --data-path <dir with images/ and Annotations/>     # 80/10/10 split
-./docker_build_run.sh                                                      # train in Docker (image: ai_trainer_frcnn)
 ```
 
 ---
 
-## 8. Troubleshooting
+## 8. Docker (optional)
+
+Not needed on this PC: the native setup above (driver + pip packages) runs everything on the GPU. WSL2 setups also ran natively (`python3 train.py`), not in Docker.
+
+Use Docker only to:
+- share the same environment across PCs, or hand the project to someone else
+- keep the trainer's packages isolated from ROS and other Python tools (e.g. the OpenCV 5 upgrade that albumentations pulled in)
+
+**Files** (in `object_detection_trainer/`):
+| File | Purpose |
+|---|---|
+| `Dockerfile` | Image based on `nvidia/cuda:12.4.0-runtime-ubuntu20.04`, installs `requirements-prod.txt` |
+| `docker_build_run.sh` | Builds `ai_trainer_frcnn` and runs 20-epoch training with `--gpus all`, `--shm-size=20g`; mounts `data/`, `data_configs/`, `outputs/` |
+| `requirements-prod.txt` | Python packages for the image (unpinned) |
+
+**Prerequisite:** NVIDIA Container Toolkit so containers can use the GPU:
+```bash
+docker --version
+nvidia-ctk --version        # missing = toolkit not installed
+```
+Install it following NVIDIA's guide ("Installing the NVIDIA Container Toolkit"), then:
+```bash
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+docker run --rm --gpus all nvidia/cuda:12.4.0-runtime-ubuntu20.04 nvidia-smi    # GPU visible in container
+```
+
+**Run:**
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+./docker_build_run.sh
+```
+Results land in `outputs/training/box_training/` on the host through the `outputs/` mount.
+
+**Status: not tested.** Review these before relying on it:
+- Ubuntu 20.04 base installs Python 3.8; current PyTorch needs a newer Python, so switch to an Ubuntu 22.04 CUDA image
+- `requirements-prod.txt` is unpinned, so builds pull the latest versions (including OpenCV 5); pin versions for repeatable builds
+- `data/` is copied into the image and also mounted at run time; the mount is enough, and dropping the copy keeps the image small
+- `EXPOSE 8000` is unused
+- `CMD ["python", ...]` may fail because the image only provides `python3`; `docker_build_run.sh` already calls `python3`
+
+---
+
+## 9. Troubleshooting
 
 | Symptom | Cause / fix |
 |---|---|
