@@ -4,6 +4,8 @@ Object Detection Model Training Framework using PyTorch Faster R-CNN
 
 Repository: AI_Trainer_Project
 
+**Quick start:** see [AI_Trainer_Quick_Note.md](AI_Trainer_Quick_Note.md) for the step-by-step commands (NVIDIA driver, training, detection, evaluation, troubleshooting).
+
 ---
 
 ## System Requirements
@@ -117,6 +119,7 @@ AI_Trainer_Project/
 │   ├── torch_utils/              # PyTorch utilities
 │   └── requirements.txt          # Python dependencies
 ├── train.sh                      # Training wrapper script
+├── AI_Trainer_Quick_Note.md      # Step-by-step command reference
 ├── LICENSE                       # License information
 └── README.md                     # This file
 ```
