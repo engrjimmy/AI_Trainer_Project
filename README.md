@@ -5,6 +5,7 @@ Object Detection Model Training Framework using PyTorch Faster R-CNN
 Repository: AI_Trainer_Project
 
 **Quick start:** see [AI_Trainer_Quick_Note.md](AI_Trainer_Quick_Note.md) for the step-by-step commands (NVIDIA driver, training, detection, evaluation, troubleshooting).
+**Docker:** see [DOCKER_GUIDE.md](DOCKER_GUIDE.md) for running everything in a container.
 
 ---
 
@@ -101,8 +102,9 @@ AI_Trainer_Project/
 │   ├── test_image_quality_check.py         # Image readability check
 │   ├── split_data.py             # 80/10/10 dataset split
 │   ├── docMLevaluation.md        # Evaluation metrics reference
-│   ├── Dockerfile                # Optional container build
-│   ├── docker_build_run.sh       # Optional container train run
+│   ├── Dockerfile                # Container image (optional)
+│   ├── docker_build_run.sh       # Build image + train in container
+│   ├── docker_run.sh             # Run any command in container
 │   ├── data_configs/             # Dataset configurations
 │   │   └── box.yaml              # Box detection config
 │   ├── data/                     # Training dataset
@@ -120,6 +122,7 @@ AI_Trainer_Project/
 │   └── requirements.txt          # Python dependencies
 ├── train.sh                      # Training wrapper script
 ├── AI_Trainer_Quick_Note.md      # Step-by-step command reference
+├── DOCKER_GUIDE.md               # Docker setup and usage
 ├── LICENSE                       # License information
 └── README.md                     # This file
 ```
@@ -388,6 +391,33 @@ ls outputs/training/box_training/image_*.jpg
 - **Location:** `outputs/training/box_test_quick/best_model.pth`
 - **ONNX:** `outputs/training/box_test_quick/model.onnx`
 - **Detection results:** `outputs/inference/res_X/*.jpg`
+
+---
+
+## Docker (optional)
+
+Not required: the native setup above runs everything on the GPU. Docker gives the same results in an isolated, pinned environment (Python 3.10, PyTorch 2.7.0 / CUDA 12.6, OpenCV 4.11 headless).
+
+**Requirements:** NVIDIA driver, Docker, and the NVIDIA Container Toolkit.
+
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+
+docker build -t ai_trainer_frcnn .
+./docker_run.sh nvidia-smi                          # check GPU in container
+
+./docker_build_run.sh 5 box_test_quick 8            # train: EPOCHS NAME BATCH
+
+./docker_run.sh python inference.py --input data/images/test \
+  --weights outputs/training/box_test_quick/best_model.pth \
+  --data data_configs/box.yaml --imgsz 640 --threshold 0.5
+```
+
+- `data/`, `data_configs/`, `outputs/` and `weights/` are mounted, so results appear on the host as usual
+- Any script runs with `./docker_run.sh python <script> ...`
+- `--show` is not available (no display in the container)
+
+Full procedure (toolkit install, detection, video, evaluation, output options, troubleshooting): [DOCKER_GUIDE.md](DOCKER_GUIDE.md).
 
 ---
 
