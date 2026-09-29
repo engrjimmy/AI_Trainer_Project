@@ -92,6 +92,15 @@ AI_Trainer_Project/
 │   ├── inference.py              # Image inference
 │   ├── inference_video.py        # Video inference
 │   ├── export.py                 # ONNX export utility
+│   ├── object_detection_onnx_inference.py  # ONNX image detection
+│   ├── eval_matrix_onnx_inference.py       # ONNX precision / recall / F1
+│   ├── onnx_eval.py              # ONNX inference results check
+│   ├── test_onnx_model_shape.py  # ONNX output shape check
+│   ├── test_image_quality_check.py         # Image readability check
+│   ├── split_data.py             # 80/10/10 dataset split
+│   ├── docMLevaluation.md        # Evaluation metrics reference
+│   ├── Dockerfile                # Optional container build
+│   ├── docker_build_run.sh       # Optional container train run
 │   ├── data_configs/             # Dataset configurations
 │   │   └── box.yaml              # Box detection config
 │   ├── data/                     # Training dataset
@@ -117,6 +126,19 @@ AI_Trainer_Project/
 ## 1. Training Setup
 
 ### 1.1 GPU environment
+
+**NVIDIA driver (native Ubuntu 22.04, one-time).** Skip on WSL2, where the Windows driver is used.
+```bash
+ubuntu-drivers devices              # note the "recommended" driver
+mokutil --sb-state                  # Secure Boot state
+
+# Example for RTX 40 series (driver 595-open) on the HWE kernel.
+# The signed linux-modules package avoids DKMS builds and MOK enrollment under Secure Boot.
+sudo apt update
+sudo apt install nvidia-driver-595-open linux-modules-nvidia-595-open-generic-hwe-22.04
+sudo reboot
+```
+The CUDA toolkit is not required; PyTorch ships its own CUDA runtime.
 
 Use this first to confirm the GPU is active:
 ```bash
@@ -165,7 +187,10 @@ python3 train.py \
   --batch 8
 
 # When asked "wandb: Enter your choice:" - Type: 3 (Don't visualize)
+# or add --disable-wandb to skip the prompt
 ```
+
+At the end of training, `model.onnx` and `final_model.pth` are exported automatically.
 
 ### Full training (20 epochs, ~1-2 hours)
 ```bash
@@ -231,15 +256,35 @@ outputs/training/box_training/model.onnx
 
 ---
 
-## 4. Run Detection (ONNX)
+## 4. Run Detection
+
+Detection is a separate step; `train.py` does not create `outputs/inference/`.
+
+**ONNX (CPU, onnxruntime):**
 ```bash
 cd AI_Trainer_Project/object_detection_trainer
 
 python3 object_detection_onnx_inference.py \
-  --input /path/to/test/images \
+  --input data/images/test \
   --weights outputs/training/box_training/model.onnx \
   --data data_configs/box.yaml \
   --imgsz 640
+```
+
+**PyTorch (GPU):**
+```bash
+python3 inference.py \
+  --input data/images/test \
+  --weights outputs/training/box_training/best_model.pth \
+  --data data_configs/box.yaml \
+  --imgsz 640 --threshold 0.5
+```
+
+**Both in one command** (ONNX → `res_1`, PyTorch → `res_2` on an empty `outputs/inference`):
+```bash
+python3 object_detection_onnx_inference.py --input data/images/test --weights outputs/training/box_training/model.onnx --data data_configs/box.yaml --imgsz 640 && \
+python3 inference.py --input data/images/test --weights outputs/training/box_training/best_model.pth --data data_configs/box.yaml --imgsz 640 --threshold 0.5 && \
+ls outputs/inference/
 ```
 
 **Detection results saved in:**
@@ -258,6 +303,8 @@ find outputs/inference -name "*.jpg" | head -10
 ls -lh outputs/inference/res_1/*.jpg
 ls -lh outputs/inference/res_2/*.jpg
 find outputs/inference -name "*.jpg" | wc -l
+
+xdg-open outputs/inference/res_1
 ```
 
 ---
@@ -272,9 +319,21 @@ python3 eval.py \
   --model fasterrcnn_resnet50_fpn
 ```
 
-**Evaluation results:**
+Prints COCO mAP (mAP@0.5, mAP@0.5:0.95) for the test set.
+
+**ONNX precision / recall / F1:**
+```bash
+python3 eval_matrix_onnx_inference.py \
+  --input_image data/images/test \
+  --ground_truth data/annotations/test \
+  --weights outputs/training/box_training/model.onnx \
+  --threshold 0.5 \
+  --output outputs/training/box_training
+```
+
+**ONNX evaluation results** (images, per-image JSON, `summary.json`):
 ```text
-outputs/training/box_training/evaluation/
+outputs/training/box_training/evaluation/evalN/
 ```
 
 ---
@@ -311,8 +370,10 @@ ls outputs/training/box_training/image_*.jpg
 | **Best model** | `outputs/training/box_training/best_model.pth` | **Use this** |
 | **ONNX model** | `outputs/training/box_training/model.onnx` | **Deployment** |
 | **Training results** | `outputs/training/box_training/results.csv` | mAP, loss |
-| **Detection script** | `object_detection_onnx_inference.py` | Run inference |
-| **Eval script** | `eval.py` | Get accuracy |
+| **Detection script** | `object_detection_onnx_inference.py` | ONNX inference |
+| **Detection script** | `inference.py` | PyTorch (GPU) inference |
+| **Eval script** | `eval.py` | COCO mAP |
+| **Eval script** | `eval_matrix_onnx_inference.py` | ONNX precision / recall / F1 |
 | **Config** | `data_configs/box.yaml` | Dataset config |
 
 ---
@@ -363,6 +424,52 @@ Example annotation structure:
 </annotation>
 ```
 
+### Preparing a new dataset (`split_data.py`)
+
+The trainer expects separate `train/`, `val/` and `test/` folders (see `data_configs/box.yaml`). Annotation tools usually export one flat folder of images and XML files; `split_data.py` turns that into the required layout.
+
+**Input** (flat, one XML per image with the same base name):
+```text
+my_dataset/
+├── images/         # *.jpg, *.jpeg, *.png, *.bmp
+└── Annotations/    # *.xml (Pascal VOC)
+```
+
+**Run:**
+```bash
+cd AI_Trainer_Project/object_detection_trainer
+python3 split_data.py --data-path /path/to/my_dataset
+```
+
+**How it works:**
+- Shuffles the image list with a fixed seed (42), so the same input always gives the same split
+- Splits 80% train / 10% val / 10% test (any remainder goes to test)
+- **Copies** each image and its matching XML into `train/`, `val/`, `test/` subfolders; the originals stay in place
+- Stops with an error if an image has no matching XML
+- Extensions are case-sensitive: `.PNG` / `.JPG` files are skipped, so rename them to lowercase first
+
+**Output:**
+```text
+my_dataset/
+├── images/{train,val,test}/
+└── Annotations/{train,val,test}/
+```
+
+**Use it for training:** copy the split folders into `data/images/` and `data/annotations/` (lowercase), or point the paths in a data config (e.g. `data_configs/box.yaml`) to them:
+```yaml
+TRAIN_DIR_IMAGES: /path/to/my_dataset/images/train
+TRAIN_DIR_LABELS: /path/to/my_dataset/Annotations/train
+VALID_DIR_IMAGES: /path/to/my_dataset/images/val
+VALID_DIR_LABELS: /path/to/my_dataset/Annotations/val
+TEST_DIR_IMAGES: /path/to/my_dataset/images/test
+TEST_DIR_LABELS: /path/to/my_dataset/Annotations/test
+```
+
+Check the images before training:
+```bash
+python3 test_image_quality_check.py --input /path/to/my_dataset/images/test
+```
+
 ---
 
 ## Troubleshooting
@@ -383,8 +490,15 @@ python3 -c "import torch; print(torch.cuda.is_available())"
 
 ### Training Issues
 
-**OpenCV errors during validation image saving**
-- Already fixed: `SAVE_VALID_PREDICTION_IMAGES: False` in box.yaml
+**OpenCV errors (`putText ... CV_8U`, `destroyAllWindows ... not implemented`)**
+- Fixed in code; scripts work with both OpenCV 4.x and 5.x (headless)
+- `--show` / `--vis-transformed` need OpenCV with GUI. If `opencv-python-headless` 5.x replaced it:
+```bash
+pip uninstall -y opencv-python opencv-python-headless
+pip install --user "opencv-python-headless==4.11.0.86"
+pip install --user --force-reinstall --no-deps "opencv-python==4.11.0.86"
+python3 -c "import cv2; print(cv2.__version__)"
+```
 
 **Albumentations version compatibility errors**
 ```bash
@@ -487,6 +601,7 @@ For commercial use or inquiries, contact: j.majumder@qibitech.com
 ## Version History
 
 - 2024_Jun: Initial release
+- 2026_Sep: ONNX export at end of training, ONNX detection/evaluation scripts, OpenCV 5 compatibility, native Ubuntu NVIDIA setup
 - Dataset: 70 train / 8 validation / 10 test images
 - Model: Faster R-CNN ResNet50 FPN
 - Classes: background, box
