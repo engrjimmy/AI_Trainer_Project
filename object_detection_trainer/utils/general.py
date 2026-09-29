@@ -293,7 +293,8 @@ def save_validation_results(images, detections, counter, out_dir, classes, color
         image_c = image_c.detach().cpu().numpy().astype(np.float32)
         image = np.transpose(image_c, (1, 2, 0))
 
-        image = np.ascontiguousarray(image, dtype=np.float32)
+        # OpenCV 5 only draws text on 8-bit images.
+        image = np.ascontiguousarray(np.clip(image * 255., 0, 255).astype(np.uint8))
 
         scores = detection['scores'].cpu().numpy()
         labels = detection['labels']
@@ -304,7 +305,7 @@ def save_validation_results(images, detections, counter, out_dir, classes, color
         pred_classes = [classes[i] for i in labels.cpu().numpy()]
         for j, box in enumerate(boxes):
             class_name = pred_classes[j]
-            color = colors[classes.index(class_name)]
+            color = tuple(float(c) * 255. for c in colors[classes.index(class_name)])
             cv2.rectangle(
                 image, 
                 (int(box[0]), int(box[1])),
@@ -315,8 +316,8 @@ def save_validation_results(images, detections, counter, out_dir, classes, color
                     (int(box[0]), int(box[1]-5)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 
                     2, lineType=cv2.LINE_AA)
-        cv2.imwrite(f"{out_dir}/image_{i}_{counter}.jpg", image*255.)
-        image_list.append(image[:, :, ::-1])
+        cv2.imwrite(f"{out_dir}/image_{i}_{counter}.jpg", image)
+        image_list.append(image[:, :, ::-1].astype(np.float32) / 255.)
     return image_list
 
 def set_infer_dir():
