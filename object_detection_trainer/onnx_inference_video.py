@@ -235,7 +235,8 @@ def main(args):
     # Release VideoCapture().
     cap.release()
     # Close all frames and video windows.
-    cv2.destroyAllWindows()
+    if args['show']:
+        cv2.destroyAllWindows()
 
     # Save JSON log file.
     if args['log_json']:
