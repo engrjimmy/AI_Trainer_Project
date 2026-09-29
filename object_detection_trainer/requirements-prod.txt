@@ -1,0 +1,13 @@
+torch
+torchvision
+pandas
+wandb
+opencv-python
+tensorboard
+pycocotools
+albumentations
+tqdm
+vision_transformers
+torchinfo
+onnx
+onnxruntime

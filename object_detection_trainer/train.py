@@ -73,7 +73,6 @@ import yaml
 import numpy as np
 import torchinfo
 import os
-from contextlib import redirect_stdout
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -238,6 +237,23 @@ def parse_opt():
 
     args = vars(parser.parse_args())
     return args
+
+def export_onnx(model, output_path, input_shape=(1, 3, 640, 640)):
+    """
+    Export the trained model to ONNX format.
+    """
+    device = next(model.parameters()).device
+    dummy_input = torch.randn(input_shape, device=device)
+    torch.onnx.export(
+        model,
+        dummy_input,
+        output_path,
+        verbose=False,
+        opset_version=12,
+        input_names=['input'],
+        output_names=['output']
+    )
+    print(f"Model exported to ONNX format at {output_path}")
 
 def main(args):
     # Initialize distributed mode.
@@ -603,11 +619,15 @@ def main(args):
     if not args['disable_wandb']:
         wandb_save_model(OUT_DIR)
 
+    # Export the trained model to ONNX and save the final weights.
+    model.eval()
+    export_onnx(model, os.path.join(OUT_DIR, 'model.onnx'))
+    final_model_path = os.path.join(OUT_DIR, 'final_model.pth')
+    torch.save(model.state_dict(), final_model_path)
+    print(f"Final model saved at {final_model_path}")
+
 
 if __name__ == '__main__':
     args = parse_opt()
-    with open('training.log', 'w') as f:
-        with redirect_stdout(f):
-            print('it now prints to `help.text`')
-            main(args)
+    main(args)
 
