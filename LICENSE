@@ -86,6 +86,13 @@ TERMS AND CONDITIONS
    This license shall be governed by and construed in accordance with the laws
    applicable to QibiTech Inc.'s jurisdiction.
 
+10. THIRD-PARTY CODE
+   Parts of object_detection_trainer/ are based on
+   fasterrcnn-pytorch-training-pipeline, Copyright (c) 2023 Sovit Ranjan
+   Rath, licensed under the MIT License (object_detection_trainer/LICENSE).
+   That original code remains under the MIT License. This license covers
+   only QibiTech's modifications, added files, and the dataset.
+
 ================================================================================
 
 For questions regarding licensing, please contact QibiTech Inc.
