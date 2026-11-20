@@ -612,7 +612,8 @@ The code is visible for project reference only. Visibility does not grant any li
 
 ## License
 
-Proprietary software owned by QibiTech Inc.
+- **QibiTech code and dataset:** proprietary, Copyright (c) 2024 QibiTech Inc. See [LICENSE](LICENSE).
+- **Third-party code:** `object_detection_trainer/` is based on [fasterrcnn-pytorch-training-pipeline](https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline) by Sovit Ranjan Rath, MIT License. The original code stays under the MIT License ([object_detection_trainer/LICENSE](object_detection_trainer/LICENSE)). QibiTech terms apply only to QibiTech's modifications, added scripts, and the dataset.
 
 For licensing inquiries, contact: j.majumder@qibitech.com
 

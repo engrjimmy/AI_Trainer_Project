@@ -5,14 +5,13 @@
  AI Trainer - Logging Utilities
 ================================================================================
 
- Author:        Jimmy Majumder
- Position:      Sr. Robotics Engineer
- Organization:  QibiTech Inc.
- Email:         j.majumder@qibitech.com
- Date:          2024_Jun
+ Based on fasterrcnn-pytorch-training-pipeline by Sovit Ranjan Rath
+ https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline
+ Original code: Copyright (c) 2023 Sovit Ranjan Rath, MIT License
+ (see object_detection_trainer/LICENSE).
 
- Copyright (c) 2024 QibiTech Inc.
- All rights reserved.
+ Modifications: Jimmy Majumder (j.majumder@qibitech.com), 2024_Jun
+ Modifications Copyright (c) 2024 QibiTech Inc.
 
  NOTICE:
  This code and data is for research and testing purposes only.
