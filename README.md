@@ -587,23 +587,26 @@ Evaluation uses COCO metrics standard.
 
 ## Dataset and Usage Restrictions
 
-This project includes a shared dataset and associated annotations that are proprietary to QibiTech Inc. and must be used only under explicit permission.
+The dataset (images and annotations) is not stored in this repository. It is kept in a separate private repository, [AI_Trainer_Data](https://github.com/engrjimmy/AI_Trainer_Data), and linked here as the `training_data/` submodule.
 
-### Important policy
-- The dataset files in this repository are not open-public data.
-- All dataset contents remain the copyright property of QibiTech Inc.
-- Use of the dataset for research, training, evaluation, or redistribution requires prior written permission.
-- Reuse, sharing, or publication of any dataset subset or derived data must be approved before distribution.
-- Any external use, collaboration, or transfer must be coordinated with Jimmy Majumder and QibiTech Inc. stakeholders.
-- For research purposes, dataset use is permitted only after approval and only when collaboration with Jimmy is in place.
-- If you do not have permission, do not use the dataset or any files from the shared dataset folder.
-- Do not upload, copy, or redistribute the dataset to other repositories, systems, or public locations without approval.
+### Access
+- The data repository is private. Access is given only by invitation from the project lead (Jimmy Majumder) after written permission.
+- With access, fetch the data with:
+  ```bash
+  git submodule update --init training_data
+  ```
+- Without access, the submodule stays empty. Use your own dataset with `split_data.py` and a config in `data_configs/`.
 
-### Research collaboration requirement
-For any research-related use of the dataset, the project must involve or be approved by Jimmy Majumder. External or independent use without such collaboration is not permitted.
+### Copyright and permitted use
+- Code, documentation, dataset, and annotations: Copyright (c) 2024 QibiTech Inc. All rights reserved. See [LICENSE](LICENSE).
+- The dataset is not open data. Any use (research, training, evaluation, publication) requires prior written permission from the copyright owner and the project lead.
+- Use, copy, modification, or redistribution of the code also requires prior written permission.
+- No commercial use, product development, or production use.
+- Do not upload, copy, or redistribute the dataset, any subset, or derived data (including trained model weights and outputs) to other repositories, systems, or public locations.
+- Permission given to one person or project does not extend to others.
 
 ### Public repository note
-This repository is shared for project visibility and documentation only. The dataset and any derived materials remain restricted until explicit permission is granted by the copyright owner and project lead.
+The code is visible for project reference only. Visibility does not grant any license. The dataset remains private.
 
 ---
 
