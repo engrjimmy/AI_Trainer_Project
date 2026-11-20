@@ -1,0 +1,3 @@
+[submodule "training_data"]
+	path = training_data
+	url = https://github.com/engrjimmy/AI_Trainer_Data.git
